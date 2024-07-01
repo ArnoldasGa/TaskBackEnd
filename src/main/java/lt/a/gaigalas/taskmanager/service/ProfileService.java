@@ -16,6 +16,9 @@ public class ProfileService {
     private PasswordEncoder passwordEncoder;
 
     public Profile registerProfile(Profile profile) {
+        if (profileRepository.existsByEmail(profile.getEmail())) {
+            throw  new IllegalArgumentException("Email already in use");
+        }
         String encodedPassword = passwordEncoder.encode(profile.getPassword());
         profile.setPassword(encodedPassword);
 
