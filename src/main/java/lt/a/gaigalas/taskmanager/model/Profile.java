@@ -21,13 +21,17 @@ public class Profile {
     private String password;
     @NotBlank(message = "Username is needed")
     private String userName;
+    @OneToOne
+    @JoinColumn(name = "token_id")
+    private ProfileToken profileToken;
 
-    public Profile(String email, String firstName, String lastName, String password, String userName) {
+    public Profile(String email, String firstName, String lastName, String password, String userName, ProfileToken profileToken) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.userName = userName;
+        this.profileToken = profileToken;
     }
 
     public Profile() {
@@ -72,5 +76,13 @@ public class Profile {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public ProfileToken getProfileToken() {
+        return profileToken;
+    }
+
+    public void setProfileToken(ProfileToken profileToken) {
+        this.profileToken = profileToken;
     }
 }

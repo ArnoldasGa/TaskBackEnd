@@ -27,4 +27,11 @@ public class ProfileService {
 
         return profileRepository.save(profile);
     }
+
+    public Profile login(String userName, String password) {
+        if (profileRepository.existsByUserNameAndPassword(userName, password)) {
+
+        }
+        throw  new IllegalArgumentException("Invalid username or password");
+    }
 }

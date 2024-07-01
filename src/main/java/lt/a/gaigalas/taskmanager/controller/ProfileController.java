@@ -18,13 +18,18 @@ public class ProfileController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody Profile profile) {
         try {
-            Profile registeredProfile = profileService.registerProfile(profile);
+            profileService.registerProfile(profile);
             return ResponseEntity.status(200).body("Profile registered successfully");
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<String> login(@RequestParam String userName, @RequestParam String password) {
+        return ResponseEntity.status(200).body("Login successful");
     }
 
 }

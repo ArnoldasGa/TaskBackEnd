@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
     boolean existsByEmail(String email);
     boolean existsByUserName(String userName);
+    boolean existsByUserNameAndPassword(String userName, String password);
 }
