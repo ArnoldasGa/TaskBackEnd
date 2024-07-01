@@ -19,6 +19,9 @@ public class ProfileService {
         if (profileRepository.existsByEmail(profile.getEmail())) {
             throw  new IllegalArgumentException("Email already in use");
         }
+        if (profileRepository.existsByUserName(profile.getUserName())) {
+            throw  new IllegalArgumentException("Username already in use");
+        }
         String encodedPassword = passwordEncoder.encode(profile.getPassword());
         profile.setPassword(encodedPassword);
 
