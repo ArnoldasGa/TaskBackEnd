@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Optional;
 
 @Service
 public class ProfileService {
@@ -39,8 +40,13 @@ public class ProfileService {
     public String login(String userName, String password) {
         Profile profile = profileRepository.findByUserName(userName);
         if (profile != null && passwordEncoder.matches(password, profile.getPassword())) {
+
+            Optional<ProfileToken> existingToken = profileTokenRepository.findByProfile(profile);
+            existingToken.ifPresent(profileTokenRepository::delete);
+
             ProfileToken token = generateToken(profile);
             profileTokenRepository.save(token);
+
             return token.getToken();
         }
         throw  new IllegalArgumentException("Invalid username or password");
