@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/profile")
 public class ProfileController {
@@ -27,9 +29,16 @@ public class ProfileController {
         }
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String userName, @RequestParam String password) {
-        return ResponseEntity.status(200).body("Login successful");
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Map<String, String> credentials) {
+        try {
+            String userName = credentials.get("userName");
+            String password = credentials.get("password");
+            String token = profileService.login(userName, password);
+            return ResponseEntity.ok(token);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 
 }

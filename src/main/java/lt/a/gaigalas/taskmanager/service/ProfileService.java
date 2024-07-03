@@ -1,10 +1,15 @@
 package lt.a.gaigalas.taskmanager.service;
 
 import lt.a.gaigalas.taskmanager.model.Profile;
+import lt.a.gaigalas.taskmanager.model.ProfileToken;
 import lt.a.gaigalas.taskmanager.repository.ProfileRepository;
+import lt.a.gaigalas.taskmanager.repository.ProfileTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.util.Base64;
 
 @Service
 public class ProfileService {
@@ -14,6 +19,9 @@ public class ProfileService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ProfileTokenRepository profileTokenRepository;
 
     public Profile registerProfile(Profile profile) {
         if (profileRepository.existsByEmail(profile.getEmail())) {
@@ -28,10 +36,24 @@ public class ProfileService {
         return profileRepository.save(profile);
     }
 
-    public Profile login(String userName, String password) {
-        if (profileRepository.existsByUserNameAndPassword(userName, password)) {
-
+    public String login(String userName, String password) {
+        Profile profile = profileRepository.findByUserName(userName);
+        if (profile != null && passwordEncoder.matches(password, profile.getPassword())) {
+            ProfileToken token = generateToken(profile);
+            profileTokenRepository.save(token);
+            return token.getToken();
         }
         throw  new IllegalArgumentException("Invalid username or password");
+    }
+
+    private ProfileToken generateToken(Profile profile) {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] tokenBytes = new byte[24];
+        secureRandom.nextBytes(tokenBytes);
+        String tokenValue = Base64.getUrlEncoder().encodeToString(tokenBytes);
+
+        long expiresIn = System.currentTimeMillis() + 3600 * 1000;
+
+        return new ProfileToken(0, tokenValue, expiresIn, profile);
     }
 }
